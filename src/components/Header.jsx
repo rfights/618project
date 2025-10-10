@@ -10,7 +10,7 @@ export function Header() {
     const { sub } = jwtDecode(token)
     return (
       <div>
-        <h1>Welcome to My Blog!</h1>
+        <h1>Welcome to Recipe Share!</h1>
         <div>
           Logged in as <User id={sub} />
           <br />
@@ -22,7 +22,7 @@ export function Header() {
 
   return (
     <div>
-      <h1>Welcome to My Blog!</h1>
+      <h1>Welcome to Recipe Share!</h1>
       <Link to='/login'>Log In</Link> | <Link to='/signup'>Sign Up</Link>
     </div>
   )

@@ -1,0 +1,134 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
+import { createRecipe } from '../api/recipes.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
+
+export function CreateRecipe() {
+  const [title, setTitle] = useState('')
+  const [ingredients, setIngredients] = useState('')
+  const [instructions, setInstructions] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
+  const [token] = useAuth()
+
+  const queryClient = useQueryClient()
+
+  const createRecipeMutation = useMutation({
+    mutationFn: () => {
+      const ingredientsArray = ingredients
+        .split('\n')
+        .map(ingredient => ingredient.trim())
+        .filter(ingredient => ingredient.length > 0)
+      
+      return createRecipe(token, { 
+        title, 
+        ingredients: ingredientsArray, 
+        instructions, 
+        imageUrl: imageUrl.trim() || undefined 
+      })
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['recipes'])
+      // Clear form after successful creation
+      setTitle('')
+      setIngredients('')
+      setInstructions('')
+      setImageUrl('')
+    },
+  })
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    createRecipeMutation.mutate()
+  }
+
+  if (!token) return <div>Please log in to create new recipes.</div>
+
+  return (
+    <form onSubmit={handleSubmit} style={{ maxWidth: '600px' }}>
+      <div style={{ marginBottom: '15px' }}>
+        <label htmlFor='create-title'>Recipe Title: </label>
+        <input
+          type='text'
+          name='create-title'
+          id='create-title'
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+          required
+        />
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label htmlFor='create-ingredients'>Ingredients (one per line): </label>
+        <textarea
+          name='create-ingredients'
+          id='create-ingredients'
+          value={ingredients}
+          onChange={(e) => setIngredients(e.target.value)}
+          placeholder="2 cups flour&#10;1 cup sugar&#10;3 eggs&#10;1 tsp vanilla extract"
+          rows={6}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+          required
+        />
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label htmlFor='create-instructions'>Instructions: </label>
+        <textarea
+          name='create-instructions'
+          id='create-instructions'
+          value={instructions}
+          onChange={(e) => setInstructions(e.target.value)}
+          placeholder="Describe the cooking steps..."
+          rows={4}
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+        />
+      </div>
+
+      <div style={{ marginBottom: '15px' }}>
+        <label htmlFor='create-image-url'>Image URL (optional): </label>
+        <input
+          type='url'
+          name='create-image-url'
+          id='create-image-url'
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
+          placeholder="https://example.com/recipe-image.jpg"
+          style={{ width: '100%', padding: '8px', marginTop: '5px' }}
+        />
+      </div>
+
+      <input
+        type='submit'
+        value={createRecipeMutation.isPending ? 'Creating...' : 'Create Recipe'}
+        disabled={!title || !ingredients || createRecipeMutation.isPending}
+        style={{ 
+          padding: '10px 20px', 
+          backgroundColor: '#007bff', 
+          color: 'white', 
+          border: 'none', 
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}
+      />
+      
+      {createRecipeMutation.isSuccess && (
+        <>
+          <br />
+          <span style={{ color: 'green', marginTop: '10px', display: 'block' }}>
+            Recipe created successfully!
+          </span>
+        </>
+      )}
+      
+      {createRecipeMutation.isError && (
+        <>
+          <br />
+          <span style={{ color: 'red', marginTop: '10px', display: 'block' }}>
+            Failed to create recipe. Please try again.
+          </span>
+        </>
+      )}
+    </form>
+  )
+}
