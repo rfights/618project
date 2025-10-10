@@ -6,9 +6,10 @@ import {
   createRecipe,
   updateRecipe,
   deleteRecipe,
+  getDefaultUser,
 } from '../services/recipes.js'
 
-import { requireAuth } from '../middleware/jwt.js'
+// Removed JWT authentication for development simplicity
 
 export function recipesRoutes(app) {
   app.get('/api/v1/recipes', async (req, res) => {
@@ -44,10 +45,12 @@ export function recipesRoutes(app) {
       return res.status(500).end()
     }
   })
-  
-  app.post('/api/v1/recipes', requireAuth, async (req, res) => {
+
+  app.post('/api/v1/recipes', async (req, res) => {
     try {
-      const recipe = await createRecipe(req.auth.sub, req.body)
+      // Get or create default user for development
+      const defaultUser = await getDefaultUser()
+      const recipe = await createRecipe(defaultUser._id, req.body)
       return res.json(recipe)
     } catch (err) {
       console.error('error creating recipe', err)
@@ -55,9 +58,11 @@ export function recipesRoutes(app) {
     }
   })
 
-  app.patch('/api/v1/recipes/:id', requireAuth, async (req, res) => {
+  app.patch('/api/v1/recipes/:id', async (req, res) => {
     try {
-      const recipe = await updateRecipe(req.auth.sub, req.params.id, req.body)
+      // Use a default user ID for development (no auth required)
+      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const recipe = await updateRecipe(defaultUserId, req.params.id, req.body)
       return res.json(recipe)
     } catch (err) {
       console.error('error updating recipe', err)
@@ -65,9 +70,11 @@ export function recipesRoutes(app) {
     }
   })
 
-  app.delete('/api/v1/recipes/:id', requireAuth, async (req, res) => {
+  app.delete('/api/v1/recipes/:id', async (req, res) => {
     try {
-      const { deletedCount } = await deleteRecipe(req.auth.sub, req.params.id)
+      // Use a default user ID for development (no auth required)
+      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const { deletedCount } = await deleteRecipe(defaultUserId, req.params.id)
       if (deletedCount === 0) return res.sendStatus(404)
       return res.sendStatus(204)
     } catch (err) {

@@ -1,8 +1,31 @@
 import { Recipe } from '../db/models/recipe.js'
 import { User } from '../db/models/user.js'
 
-export async function createRecipe(userID, { title, ingredients, instructions, imageUrl, tags }) {
-  const recipe = new Recipe({ title, author: userID, ingredients, instructions, imageUrl, tags })
+// Create or get default user for development
+export async function getDefaultUser() {
+  let defaultUser = await User.findOne({ username: 'demo-chef' })
+  if (!defaultUser) {
+    defaultUser = new User({
+      username: 'demo-chef',
+      password: 'not-needed-for-demo',
+    })
+    await defaultUser.save()
+  }
+  return defaultUser
+}
+
+export async function createRecipe(
+  userID,
+  { title, ingredients, instructions, imageUrl, tags },
+) {
+  const recipe = new Recipe({
+    title,
+    author: userID,
+    ingredients,
+    instructions,
+    imageUrl,
+    tags,
+  })
   return await recipe.save()
 }
 
@@ -31,7 +54,11 @@ export async function getRecipeById(recipeId) {
   return await Recipe.findById(recipeId)
 }
 
-export async function updateRecipe(userId, recipeId, { title, ingredients, instructions, imageUrl, tags }) {
+export async function updateRecipe(
+  userId,
+  recipeId,
+  { title, ingredients, instructions, imageUrl, tags },
+) {
   return await Recipe.findOneAndUpdate(
     { _id: recipeId, author: userId },
     { $set: { title, ingredients, instructions, imageUrl, tags } },

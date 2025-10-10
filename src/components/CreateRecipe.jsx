@@ -4,11 +4,11 @@ import { createRecipe } from '../api/recipes.js'
 import { useAuth } from '../contexts/AuthContext.jsx'
 
 export function CreateRecipe() {
+  const [user] = useAuth()
   const [title, setTitle] = useState('')
   const [ingredients, setIngredients] = useState('')
   const [instructions, setInstructions] = useState('')
   const [imageUrl, setImageUrl] = useState('')
-  const [token] = useAuth()
 
   const queryClient = useQueryClient()
 
@@ -16,14 +16,14 @@ export function CreateRecipe() {
     mutationFn: () => {
       const ingredientsArray = ingredients
         .split('\n')
-        .map(ingredient => ingredient.trim())
-        .filter(ingredient => ingredient.length > 0)
-      
-      return createRecipe(token, { 
-        title, 
-        ingredients: ingredientsArray, 
-        instructions, 
-        imageUrl: imageUrl.trim() || undefined 
+        .map((ingredient) => ingredient.trim())
+        .filter((ingredient) => ingredient.length > 0)
+
+      return createRecipe({
+        title,
+        ingredients: ingredientsArray,
+        instructions,
+        imageUrl: imageUrl.trim() || undefined,
       })
     },
     onSuccess: () => {
@@ -41,7 +41,27 @@ export function CreateRecipe() {
     createRecipeMutation.mutate()
   }
 
-  if (!token) return <div>Please log in to create new recipes.</div>
+  if (!user) {
+    return (
+      <div
+        style={{
+          padding: '20px',
+          textAlign: 'center',
+          backgroundColor: '#f8f9fa',
+          borderRadius: '8px',
+          border: '1px solid #dee2e6',
+        }}
+      >
+        <p style={{ fontSize: '1.2rem', marginBottom: '15px' }}>
+          Please log in to create recipes!
+        </p>
+        <p style={{ color: '#6c757d' }}>
+          Sign up for a new account or log in to start sharing your favorite
+          recipes.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: '600px' }}>
@@ -65,7 +85,7 @@ export function CreateRecipe() {
           id='create-ingredients'
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
-          placeholder="2 cups flour&#10;1 cup sugar&#10;3 eggs&#10;1 tsp vanilla extract"
+          placeholder='2 cups flour&#10;1 cup sugar&#10;3 eggs&#10;1 tsp vanilla extract'
           rows={6}
           style={{ width: '100%', padding: '8px', marginTop: '5px' }}
           required
@@ -79,7 +99,7 @@ export function CreateRecipe() {
           id='create-instructions'
           value={instructions}
           onChange={(e) => setInstructions(e.target.value)}
-          placeholder="Describe the cooking steps..."
+          placeholder='Describe the cooking steps...'
           rows={4}
           style={{ width: '100%', padding: '8px', marginTop: '5px' }}
         />
@@ -93,7 +113,7 @@ export function CreateRecipe() {
           id='create-image-url'
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          placeholder="https://example.com/recipe-image.jpg"
+          placeholder='https://example.com/recipe-image.jpg'
           style={{ width: '100%', padding: '8px', marginTop: '5px' }}
         />
       </div>
@@ -102,16 +122,16 @@ export function CreateRecipe() {
         type='submit'
         value={createRecipeMutation.isPending ? 'Creating...' : 'Create Recipe'}
         disabled={!title || !ingredients || createRecipeMutation.isPending}
-        style={{ 
-          padding: '10px 20px', 
-          backgroundColor: '#007bff', 
-          color: 'white', 
-          border: 'none', 
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
           borderRadius: '5px',
-          cursor: 'pointer'
+          cursor: 'pointer',
         }}
       />
-      
+
       {createRecipeMutation.isSuccess && (
         <>
           <br />
@@ -120,7 +140,7 @@ export function CreateRecipe() {
           </span>
         </>
       )}
-      
+
       {createRecipeMutation.isError && (
         <>
           <br />

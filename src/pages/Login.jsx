@@ -9,12 +9,12 @@ export function Login() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
-  const [, setToken] = useAuth()
+  const [, setUser] = useAuth()
 
   const loginMutation = useMutation({
     mutationFn: () => login({ username, password }),
     onSuccess: (data) => {
-      setToken(data.token)
+      setUser(data.user)
       navigate('/')
     },
     onError: () => alert('failed to log in!'),

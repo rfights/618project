@@ -31,3 +31,15 @@ export async function loginUser({ username, password }) {
   })
   return token
 }
+
+// Simplified login for development (no JWT)
+export async function loginUserSimple({ username, password }) {
+  const user = await User.findOne({ username })
+  if (!user) throw new Error('invalid username!')
+
+  const isPasswordCorrect = await bcrypt.compare(password, user.password)
+  if (!isPasswordCorrect) {
+    throw new Error('invalid password!')
+  }
+  return user
+}

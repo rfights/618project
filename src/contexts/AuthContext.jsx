@@ -2,15 +2,15 @@ import { createContext, useState, useContext } from 'react'
 import PropTypes from 'prop-types'
 
 export const AuthContext = createContext({
-  token: null,
-  setToken: () => {},
+  user: null,
+  setUser: () => {},
 })
 
 export const AuthContextProvider = ({ children }) => {
-  const [token, setToken] = useState(null)
+  const [user, setUser] = useState(null)
 
   return (
-    <AuthContext.Provider value={{ token, setToken }}>
+    <AuthContext.Provider value={{ user, setUser }}>
       {children}
     </AuthContext.Provider>
   )
@@ -21,6 +21,6 @@ AuthContextProvider.propTypes = {
 }
 
 export function useAuth() {
-  const { token, setToken } = useContext(AuthContext)
-  return [token, setToken]
+  const { user, setUser } = useContext(AuthContext)
+  return [user, setUser]
 }
