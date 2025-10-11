@@ -10,8 +10,11 @@ export function userRoutes(app) {
       const user = await createUser(req.body)
       return res.status(201).json({ username: user.username })
     } catch (err) {
+      console.error('Signup error:', err?.message || err)
       return res.status(400).json({
         error: 'Failed to create the user, does the username already exist?',
+        details:
+          process.env.NODE_ENV === 'production' ? undefined : err?.message,
       })
     }
   })

@@ -1,27 +1,29 @@
-export const signup = async ({ username, password }) => {
-  const url = `${import.meta.env.VITE_BACKEND_URL}/user/signup`
-  console.log('Signup URL:', url)
-  console.log('Environment variable:', import.meta.env.VITE_BACKEND_URL)
+import { BASE } from './client'
 
+export const signup = async ({ username, password }) => {
+  const url = `${BASE}/user/signup`
   const res = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
   })
 
-  console.log('Response status:', res.status)
-  console.log('Response ok:', res.ok)
-
   if (!res.ok) {
-    const errorText = await res.text()
-    console.log('Error response:', errorText)
-    throw new Error('failed to sign up')
+    let message = 'failed to register'
+    try {
+      const data = await res.json()
+      if (data?.error) message = data.error
+      if (data?.details) message += `: ${data.details}`
+    } catch (_) {
+      // ignore parse error
+    }
+    throw new Error(message)
   }
   return await res.json()
 }
 
 export const login = async ({ username, password }) => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/login`, {
+  const res = await fetch(`${BASE}/user/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username, password }),
@@ -31,7 +33,7 @@ export const login = async ({ username, password }) => {
 }
 
 export const getUserInfo = async (id) => {
-  const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/users/${id}`, {
+  const res = await fetch(`${BASE}/users/${id}`, {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   })

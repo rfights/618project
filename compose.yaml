@@ -17,7 +17,7 @@ services:
     build:
       context: .
       args:
-        VITE_BACKEND_URL: http://cautious-space-engine-x5rwjq5jv7rjf5qq-3001.app.github.dev/api/v1/
+        VITE_BACKEND_URL: https://cautious-space-engine-x5rwjq5jv7rjf5qq-3001.app.github.dev/api/v1/
     ports:
       - '3000:80'
     depends_on:

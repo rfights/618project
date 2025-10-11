@@ -13,9 +13,20 @@ export async function getUserInfoById(userId) {
 }
 
 export async function createUser({ username, password }) {
+  if (!username || !password) {
+    throw new Error('username and password are required')
+  }
   const hashedPassword = await bcrypt.hash(password, 10)
-  const user = new User({ username, password: hashedPassword })
-  return await user.save()
+  try {
+    const user = new User({ username, password: hashedPassword })
+    return await user.save()
+  } catch (err) {
+    // Duplicate key error from MongoDB
+    if (err && err.code === 11000) {
+      throw new Error('username already exists')
+    }
+    throw err
+  }
 }
 
 export async function loginUser({ username, password }) {

@@ -11,7 +11,10 @@ export function Signup() {
   const signupMutation = useMutation({
     mutationFn: () => signup({ username, password }),
     onSuccess: () => navigate('/login'),
-    onError: () => alert('failed to sign up!'),
+    onError: (err) => {
+      const msg = err?.message || 'failed to register'
+      alert(msg)
+    },
   })
 
   const handleSubmit = (e) => {
@@ -50,6 +53,9 @@ export function Signup() {
         value={signupMutation.isPending ? 'Signing up...' : 'Sign Up'}
         disabled={!username || !password || signupMutation.isPending}
       />
+      {signupMutation.isError && (
+        <p style={{ color: 'red' }}>{signupMutation.error.message}</p>
+      )}
     </form>
   )
 }

@@ -6,16 +6,28 @@ import cors from 'cors'
 
 const app = express()
 
-// Configure CORS to allow frontend development server
+// Configure CORS to allow frontend development server (including Codespaces)
+const allowedOrigins = new Set([
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://127.0.0.1:5173',
+  'http://127.0.0.1:5174',
+  'http://127.0.0.1:3000',
+])
+
+const codespacesOriginRegex = /^https?:\/\/([a-z0-9-]+)-\d+\.app\.github\.dev$/
+
 const corsOptions = {
-  origin: [
-    'http://localhost:5173', // Vite dev server
-    'http://localhost:5174', // Vite dev server (alt port)
-    'http://localhost:3000', // Docker frontend
-    'http://127.0.0.1:5173',
-    'http://127.0.0.1:5174',
-    'http://127.0.0.1:3000',
-  ],
+  origin(origin, callback) {
+    // Allow non-browser requests or same-origin
+    if (!origin) return callback(null, true)
+
+    if (allowedOrigins.has(origin) || codespacesOriginRegex.test(origin)) {
+      return callback(null, true)
+    }
+    return callback(new Error(`Not allowed by CORS: ${origin}`))
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 }
