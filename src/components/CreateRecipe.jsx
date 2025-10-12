@@ -55,11 +55,10 @@ export function CreateRecipe() {
         }}
       >
         <p style={{ fontSize: '1.2rem', marginBottom: '15px' }}>
-          Please log in to create recipes!
+          Please log in to post recipes!
         </p>
         <p style={{ color: '#6c757d' }}>
-          Sign up for a new account or log in to start sharing your favorite
-          recipes.
+          Sign up for a new account or log in to post and like recipes.
         </p>
       </div>
     )
@@ -81,13 +80,12 @@ export function CreateRecipe() {
       </div>
 
       <div style={{ marginBottom: '15px' }}>
-        <label htmlFor='create-ingredients'>Ingredients (one per line): </label>
+        <label htmlFor='create-ingredients'>Ingredients: </label>
         <textarea
           name='create-ingredients'
           id='create-ingredients'
           value={ingredients}
           onChange={(e) => setIngredients(e.target.value)}
-          placeholder='2 cups flour&#10;1 cup sugar&#10;3 eggs&#10;1 tsp vanilla extract'
           rows={6}
           style={{ width: '100%', padding: '8px', marginTop: '5px' }}
           required
