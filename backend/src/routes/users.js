@@ -6,15 +6,45 @@ import {
 
 export function userRoutes(app) {
   app.post('/api/v1/user/signup', async (req, res) => {
+    // Validate request payload early with actionable issues
+    const issues = []
+    const { username, password } = req.body ?? {}
+    if (!username || typeof username !== 'string') {
+      issues.push({ field: 'username', message: 'username is required' })
+    } else if (username.length < 3) {
+      issues.push({
+        field: 'username',
+        message: 'username must be at least 3 characters',
+      })
+    }
+    if (!password || typeof password !== 'string') {
+      issues.push({ field: 'password', message: 'password is required' })
+    } else if (password.length < 6) {
+      issues.push({
+        field: 'password',
+        message: 'password must be at least 6 characters',
+      })
+    }
+
+    if (issues.length > 0) {
+      return res.status(422).json({ error: 'invalid input', issues })
+    }
+
     try {
-      const user = await createUser(req.body)
+      const user = await createUser({ username, password })
       return res.status(201).json({ username: user.username })
     } catch (err) {
       console.error('Signup error:', err?.message || err)
-      return res.status(400).json({
-        error: 'Failed to create the user, does the username already exist?',
-        details:
-          process.env.NODE_ENV === 'production' ? undefined : err?.message,
+      const msg = (err && err.message) || 'unknown error'
+      if (/username already exists/i.test(msg)) {
+        return res.status(409).json({ error: 'username already exists' })
+      }
+      if (/required/i.test(msg)) {
+        return res.status(400).json({ error: msg })
+      }
+      return res.status(500).json({
+        error: 'failed to create the user',
+        details: process.env.NODE_ENV === 'production' ? undefined : msg,
       })
     }
   })

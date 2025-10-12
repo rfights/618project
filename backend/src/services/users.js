@@ -16,6 +16,9 @@ export async function createUser({ username, password }) {
   if (!username || !password) {
     throw new Error('username and password are required')
   }
+  if (typeof password !== 'string' || password.length < 6) {
+    throw new Error('password must be at least 6 characters')
+  }
   const hashedPassword = await bcrypt.hash(password, 10)
   try {
     const user = new User({ username, password: hashedPassword })

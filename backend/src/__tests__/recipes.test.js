@@ -17,22 +17,30 @@ let testUser = null
 let sampleRecipes = []
 
 beforeAll(async () => {
-  testUser = await createUser({ username: 'sampleChef', password: 'user' })
+  testUser = await createUser({ username: 'sampleChef', password: 'user123' })
   sampleRecipes = [
-    { 
-      title: 'Classic Pasta Carbonara', 
-      author: testUser._id, 
-      ingredients: ['pasta', 'eggs', 'bacon', 'parmesan cheese', 'black pepper'],
-      instructions: 'Cook pasta, whisk eggs with cheese, combine with hot pasta and bacon.',
+    {
+      title: 'Classic Pasta Carbonara',
+      author: testUser._id,
+      ingredients: [
+        'pasta',
+        'eggs',
+        'bacon',
+        'parmesan cheese',
+        'black pepper',
+      ],
+      instructions:
+        'Cook pasta, whisk eggs with cheese, combine with hot pasta and bacon.',
       imageUrl: 'https://example.com/carbonara.jpg',
-      tags: ['italian', 'pasta'] 
+      tags: ['italian', 'pasta'],
     },
-    { 
-      title: 'Chocolate Chip Cookies', 
-      author: testUser._id, 
+    {
+      title: 'Chocolate Chip Cookies',
+      author: testUser._id,
       ingredients: ['flour', 'butter', 'sugar', 'chocolate chips', 'eggs'],
-      instructions: 'Mix ingredients, form cookies, bake at 350F for 12 minutes.',
-      tags: ['dessert', 'cookies'] 
+      instructions:
+        'Mix ingredients, form cookies, bake at 350F for 12 minutes.',
+      tags: ['dessert', 'cookies'],
     },
     {
       title: 'Garden Salad',
@@ -135,7 +143,7 @@ describe('creating recipes', () => {
   test('with minimal parameters should succeed', async () => {
     const recipe = {
       title: 'Minimal Recipe',
-      ingredients: ['simple ingredient']
+      ingredients: ['simple ingredient'],
     }
     const createdRecipe = await createRecipe(testUser._id, recipe)
     expect(createdRecipe._id).toBeInstanceOf(mongoose.Types.ObjectId)
@@ -168,7 +176,11 @@ describe('updating recipes', () => {
   })
 
   test('should fail if the id does not exist', async () => {
-    const recipe = await updateRecipe(testUser._id, '000000000000000000000000', {})
+    const recipe = await updateRecipe(
+      testUser._id,
+      '000000000000000000000000',
+      {},
+    )
     expect(recipe).toEqual(null)
   })
 })

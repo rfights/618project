@@ -12,8 +12,8 @@ export function Signup() {
     mutationFn: () => signup({ username, password }),
     onSuccess: () => navigate('/login'),
     onError: (err) => {
-      const msg = err?.message || 'failed to register'
-      alert(msg)
+      // Keep state-driven error display; avoid alert noise
+      console.error('Signup failed:', err)
     },
   })
 
@@ -54,7 +54,52 @@ export function Signup() {
         disabled={!username || !password || signupMutation.isPending}
       />
       {signupMutation.isError && (
-        <p style={{ color: 'red' }}>{signupMutation.error.message}</p>
+        <div style={{ color: 'red' }}>
+          <strong>Failed to sign up.</strong>
+          <div>
+            {(() => {
+              const raw = signupMutation.error?.message || ''
+              // If backend provided structured error via thrown Error(message)
+              try {
+                const maybe = JSON.parse(raw)
+                if (maybe && maybe.error) {
+                  return (
+                    <>
+                      <div>{maybe.error}</div>
+                      {Array.isArray(maybe.issues) &&
+                        maybe.issues.length > 0 && (
+                          <ul>
+                            {maybe.issues.map((i, idx) => (
+                              <li key={idx}>
+                                {i.field ? `${i.field}: ` : ''}
+                                {i.message}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                    </>
+                  )
+                }
+              } catch (_) {
+                // not JSON, fall through
+              }
+
+              // Fallback: show plain message and useful hints
+              return (
+                <>
+                  <div>{raw || 'Unknown error'}</div>
+                  {raw.toLowerCase().includes('failed to fetch') && (
+                    <div>
+                      Hint: check that your backend is reachable over HTTPS and
+                      that ports are forwarded (Codespaces). Try reloading the
+                      page.
+                    </div>
+                  )}
+                </>
+              )
+            })()}
+          </div>
+        </div>
       )}
     </form>
   )

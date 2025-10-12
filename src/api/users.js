@@ -13,7 +13,12 @@ export const signup = async ({ username, password }) => {
     try {
       const data = await res.json()
       if (data?.error) message = data.error
-      if (data?.details) message += `: ${data.details}`
+      if (Array.isArray(data?.issues) && data.issues.length > 0) {
+        // Embed structured JSON string so UI can render list
+        message = JSON.stringify({ error: message, issues: data.issues })
+      } else if (data?.details) {
+        message += `: ${data.details}`
+      }
     } catch (_) {
       // ignore parse error
     }
