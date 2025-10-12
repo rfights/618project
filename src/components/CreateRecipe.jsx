@@ -20,6 +20,7 @@ export function CreateRecipe() {
         .filter((ingredient) => ingredient.length > 0)
 
       return createRecipe({
+        authorId: user?.id,
         title,
         ingredients: ingredientsArray,
         instructions,
@@ -27,7 +28,8 @@ export function CreateRecipe() {
       })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['recipes'])
+      // Invalidate all recipe queries so lists refresh (React Query v5 API)
+      queryClient.invalidateQueries({ queryKey: ['recipes'] })
       // Clear form after successful creation
       setTitle('')
       setIngredients('')

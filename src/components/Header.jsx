@@ -34,7 +34,7 @@ export function Header() {
       <header style={headerStyle}>
         <div style={containerStyle}>
           <div>
-            <h1 style={titleStyle}>Recipe Hub</h1>
+            <h1 style={titleStyle}>Ramey&rsquo;s Recipes</h1>
             <p
               style={{ margin: '5px 0 0 0', opacity: 0.9, fontSize: '1.1rem' }}
             >
@@ -78,7 +78,7 @@ export function Header() {
     <header style={headerStyle}>
       <div style={containerStyle}>
         <div>
-          <h1 style={titleStyle}>Recipe Hub</h1>
+          <h1 style={titleStyle}>Ramey&rsquo;s Recipes</h1>
           <p style={{ margin: '5px 0 0 0', opacity: 0.9, fontSize: '1.1rem' }}>
             Share, edit, and like recipes!
           </p>

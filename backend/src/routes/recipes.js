@@ -6,7 +6,6 @@ import {
   createRecipe,
   updateRecipe,
   deleteRecipe,
-  getDefaultUser,
 } from '../services/recipes.js'
 
 // Removed JWT authentication for development simplicity
@@ -48,9 +47,11 @@ export function recipesRoutes(app) {
 
   app.post('/api/v1/recipes', async (req, res) => {
     try {
-      // Get or create default user for development
-      const defaultUser = await getDefaultUser()
-      const recipe = await createRecipe(defaultUser._id, req.body)
+      const { authorId } = req.body || {}
+      if (!authorId) {
+        return res.status(400).json({ error: 'authorId is required' })
+      }
+      const recipe = await createRecipe(authorId, req.body)
       return res.json(recipe)
     } catch (err) {
       console.error('error creating recipe', err)

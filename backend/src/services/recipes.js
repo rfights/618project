@@ -1,19 +1,6 @@
 import { Recipe } from '../db/models/recipe.js'
 import { User } from '../db/models/user.js'
 
-// Create or get default user for development
-export async function getDefaultUser() {
-  let defaultUser = await User.findOne({ username: 'demo-chef' })
-  if (!defaultUser) {
-    defaultUser = new User({
-      username: 'demo-chef',
-      password: 'not-needed-for-demo',
-    })
-    await defaultUser.save()
-  }
-  return defaultUser
-}
-
 export async function createRecipe(
   userID,
   { title, ingredients, instructions, imageUrl, tags },
