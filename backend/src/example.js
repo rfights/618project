@@ -1,24 +1,25 @@
 import { initDatabase } from './db/init.js'
 
-import { Post } from './db/models/post.js'
+import { Recipe } from './db/models/recipe.js'
 
 import dotenv from 'dotenv'
 dotenv.config()
 
 await initDatabase()
 
-const post = new Post({
+const recipe = new Recipe({
   title: 'Hello Mongoose!',
-  author: 'Ramey Fights',
-  contents: 'This post is stored in a MongoDB database using Mongoose.',
+  author: '507f1f77bcf86cd799439011', // Mock ObjectId for example
+  ingredients: ['1 cup flour', '2 eggs', '1 tsp vanilla'],
+  instructions: 'This recipe is stored in a MongoDB database using Mongoose.',
   tags: ['mongoose', 'mongodb'],
 })
 
-const createdPost = await post.save()
+const createdRecipe = await recipe.save()
 
-await Post.findByIdAndUpdate(createdPost._id, {
+await Recipe.findByIdAndUpdate(createdRecipe._id, {
   $set: { title: 'Hello again, Mongoose!' },
 })
 
-const posts = await Post.find()
-console.log(posts)
+const recipes = await Recipe.find()
+console.log(recipes)
