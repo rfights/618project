@@ -1,4 +1,3 @@
-version: '3.9'
 services:
   blog-database:
     image: mongo
@@ -16,8 +15,6 @@ services:
   blog-frontend:
     build:
       context: .
-      args:
-        VITE_BACKEND_URL: https://cautious-space-engine-x5rwjq5jv7rjf5qq-3001.app.github.dev/api/v1/
     ports:
       - '3000:80'
     depends_on:

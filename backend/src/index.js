@@ -8,5 +8,5 @@ const PORT = process.env.PORT
 
 await initDatabase()
 app.listen(PORT, () => {
-  console.info(`Express server running on https://localhost:${PORT}`)
+  console.info(`Express server running on http://localhost:${PORT}`)
 })
