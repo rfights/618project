@@ -52,7 +52,7 @@ export function Header() {
             }}
           >
             <span style={{ fontSize: '1.1rem' }}>
-              👋 Welcome, {user.username}!
+              Welcome, {user.username}!
             </span>
             <button
               onClick={() => setUser(null)}
