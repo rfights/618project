@@ -11,19 +11,9 @@ export function userRoutes(app) {
     const { username, password } = req.body ?? {}
     if (!username || typeof username !== 'string') {
       issues.push({ field: 'username', message: 'username is required' })
-    } else if (username.length < 3) {
-      issues.push({
-        field: 'username',
-        message: 'username must be at least 3 characters',
-      })
     }
     if (!password || typeof password !== 'string') {
       issues.push({ field: 'password', message: 'password is required' })
-    } else if (password.length < 6) {
-      issues.push({
-        field: 'password',
-        message: 'password must be at least 6 characters',
-      })
     }
 
     if (issues.length > 0) {
