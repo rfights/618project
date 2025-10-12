@@ -49,8 +49,11 @@ export function userRoutes(app) {
 
   app.post('/api/v1/user/login', async (req, res) => {
     try {
-      const token = await loginUserSimple(req.body)
-      return res.status(200).send({ token })
+      const user = await loginUserSimple(req.body)
+      // Return minimal safe user payload expected by frontend
+      return res.status(200).json({
+        user: { id: String(user._id), username: user.username },
+      })
     } catch (err) {
       return res.status(400).send({
         error: 'login failed, did you enter the correct username/password?',
