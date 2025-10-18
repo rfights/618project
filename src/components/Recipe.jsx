@@ -119,7 +119,11 @@ export function Recipe({
           }}
           title={userId ? (hasLiked ? 'Unlike' : 'Like') : 'Login to like'}
         >
-          ♥
+          <img
+            src='/src/assets/meow_chefkiss.png'
+            alt='Like'
+            style={{ width: '20px', height: '20px' }}
+          />
         </button>
         <span>
           {likeList.length} {likeList.length === 1 ? 'like' : 'likes'}
