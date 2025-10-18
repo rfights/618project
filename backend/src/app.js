@@ -1,8 +1,14 @@
 import express from 'express'
 import { recipesRoutes } from './routes/recipes.js'
 import { userRoutes } from './routes/users.js'
+import { uploadRoutes } from './routes/upload.js'
 import bodyParser from 'body-parser'
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express()
 
@@ -41,8 +47,18 @@ const corsOptions = {
 app.use(cors(corsOptions))
 app.use(bodyParser.json())
 
+// Serve uploaded files statically
+app.use('/api/v1/uploads', express.static(path.join(__dirname, '../uploads')))
+
+// Attach like/unlike services to app for use in routes
+import * as recipeServices from './services/recipes.js'
+app.use((req, res, next) => {
+  req.services = recipeServices
+  next()
+})
 recipesRoutes(app)
 userRoutes(app)
+uploadRoutes(app)
 
 app.get('/', (req, res) => {
   res.send('Hello from Express Live!!')

@@ -83,4 +83,34 @@ export function recipesRoutes(app) {
       return res.status(500).end()
     }
   })
+
+  // Like a recipe
+  app.post('/api/v1/recipes/:id/like', async (req, res) => {
+    try {
+      // Use a default user ID for development (no auth required)
+      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const recipeId = req.params.id
+      const result = await req.services.likeRecipe(recipeId, defaultUserId)
+      if (!result) return res.status(404).json({ error: 'Recipe not found' })
+      return res.json(result)
+    } catch (err) {
+      console.error('error liking recipe', err)
+      return res.status(500).end()
+    }
+  })
+
+  // Unlike a recipe
+  app.post('/api/v1/recipes/:id/unlike', async (req, res) => {
+    try {
+      // Use a default user ID for development (no auth required)
+      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const recipeId = req.params.id
+      const result = await req.services.unlikeRecipe(recipeId, defaultUserId)
+      if (!result) return res.status(404).json({ error: 'Recipe not found' })
+      return res.json(result)
+    } catch (err) {
+      console.error('error unliking recipe', err)
+      return res.status(500).end()
+    }
+  })
 }

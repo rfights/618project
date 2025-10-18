@@ -36,3 +36,23 @@ export const deleteRecipe = async (recipeId) => {
   })
   return res
 }
+
+export const likeRecipe = async (recipeId) => {
+  const res = await fetch(`${BASE}/recipes/${recipeId}/like`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return await res.json()
+}
+
+export const unlikeRecipe = async (recipeId) => {
+  const res = await fetch(`${BASE}/recipes/${recipeId}/unlike`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  })
+  return await res.json()
+}

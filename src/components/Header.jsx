@@ -54,6 +54,20 @@ export function Header() {
             <span style={{ fontSize: '1.1rem' }}>
               Welcome, {user.username}!
             </span>
+            <Link
+              to='/my-recipes'
+              style={{
+                color: 'white',
+                textDecoration: 'none',
+                padding: '8px 16px',
+                borderRadius: '15px',
+                background: 'rgba(255,255,255,0.3)',
+                fontWeight: '500',
+                fontSize: '14px',
+              }}
+            >
+              My Recipes
+            </Link>
             <button
               onClick={() => setUser(null)}
               style={{

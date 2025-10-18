@@ -8,6 +8,7 @@ const recipeSchema = new Schema(
     instructions: { type: String, required: false },
     imageUrl: { type: String, required: false },
     tags: [String],
+    likes: [{ type: Schema.Types.ObjectId, ref: 'user', default: [] }],
   },
   { timestamps: true },
 )
