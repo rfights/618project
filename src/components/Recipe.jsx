@@ -22,18 +22,25 @@ export function Recipe({
     user &&
     ((typeof author === 'string' && author === user.username) ||
       author?.username === user.username ||
-      author?._id === user.id)
+      author?._id?.toString() === user.id?.toString())
   const userId = user?.id
   const hasLiked =
-    userId && likeList.some((id) => id === userId || id?._id === userId)
+    userId &&
+    likeList.some(
+      (id) =>
+        id?.toString() === userId?.toString() ||
+        id?._id?.toString() === userId?.toString(),
+    )
 
   const handleLike = async () => {
-    if (!userId) return
+    if (!userId || isOwner) return
     if (hasLiked) {
-      const updated = await unlikeRecipe(recipeId)
+      const updated = await unlikeRecipe(recipeId, userId)
+      console.log('Unlike response:', updated)
       setLikeList(updated.likes)
     } else {
-      const updated = await likeRecipe(recipeId)
+      const updated = await likeRecipe(recipeId, userId)
+      console.log('Like response:', updated)
       setLikeList(updated.likes)
     }
   }
@@ -105,29 +112,56 @@ export function Recipe({
       >
         <button
           onClick={handleLike}
-          disabled={!userId}
+          disabled={!userId || isOwner}
           style={{
-            background: hasLiked ? '#ff4081' : '#eee',
+            position: 'relative',
+            background: hasLiked ? '#ff40ffff' : '#eee',
             color: hasLiked ? 'white' : '#333',
             border: 'none',
             borderRadius: '50%',
             width: '32px',
             height: '32px',
             fontSize: '18px',
-            cursor: userId ? 'pointer' : 'not-allowed',
+            cursor: !userId || isOwner ? 'not-allowed' : 'pointer',
             transition: 'background 0.2s',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
-          title={userId ? (hasLiked ? 'Unlike' : 'Like') : 'Login to like'}
+          title={
+            !userId
+              ? 'Login to like'
+              : isOwner
+                ? 'Authors cannot like their own recipe'
+                : hasLiked
+                  ? 'Unlike'
+                  : 'Like'
+          }
         >
           <img
             src='/src/assets/meow_chefkiss.png'
             alt='Like'
             style={{ width: '20px', height: '20px' }}
           />
+          <span
+            style={{
+              position: 'absolute',
+              top: '-10px',
+              right: '-10px',
+              background: '#ff40ffff',
+              color: 'white',
+              borderRadius: '50%',
+              padding: '1px 4px',
+              fontSize: '10px',
+              fontWeight: 'bold',
+              minWidth: '14px',
+              textAlign: 'center',
+              boxShadow: '0 0 2px #333',
+            }}
+          >
+            {likeList.length}
+          </span>
         </button>
-        <span>
-          {likeList.length} {likeList.length === 1 ? 'like' : 'likes'}
-        </span>
       </div>
 
       {imageUrl && (

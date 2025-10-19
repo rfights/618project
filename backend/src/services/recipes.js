@@ -26,16 +26,12 @@ async function listRecipes(
       return []
     }
     const mongoSortOrder = sortOrder === 'ascending' ? 1 : -1
-    // Special case: sort by likes count
     if (sortBy === 'likes') {
-      // Use aggregation to sort by likes array length
       const recipes = await Recipe.aggregate([
         { $match: query },
         { $addFields: { likesCount: { $size: { $ifNull: ['$likes', []] } } } },
         { $sort: { likesCount: mongoSortOrder } },
       ])
-      // Populate author field for consistency
-      // (Mongoose aggregate does not auto-populate refs)
       const populated = await Recipe.populate(recipes, { path: 'author' })
       return populated
     }
@@ -57,7 +53,6 @@ export async function listAllRecipes(options) {
 
 export async function listRecipesByAuthor(authorUsername, options) {
   try {
-    // Return empty array if no author username provided
     if (!authorUsername || authorUsername.trim() === '') {
       return []
     }
@@ -74,7 +69,6 @@ export async function listRecipesByAuthor(authorUsername, options) {
 
 export async function listRecipesByTag(tags, options) {
   try {
-    // Return empty array if no tags provided
     if (!tags) {
       return []
     }
@@ -110,20 +104,36 @@ export async function deleteRecipe(userId, recipeId) {
 export async function likeRecipe(recipeId, userId) {
   const recipe = await Recipe.findById(recipeId)
   if (!recipe) return null
-  if (!recipe.likes.includes(userId)) {
-    recipe.likes.push(userId)
+  // Prevent author from liking their own recipe
+  const authorId = recipe.author.toString()
+  const userIdStr = userId.toString()
+  if (authorId === userIdStr) {
+    return recipe
+  }
+  // Only allow one like per user, and only if not already liked
+  const likeIds = recipe.likes.map((id) => id.toString())
+  if (!likeIds.includes(userIdStr)) {
+    recipe.likes.push(userIdStr)
     await recipe.save()
   }
+  // Always return likes as strings
+  recipe.likes = recipe.likes.map((id) => id.toString())
   return recipe
 }
 
-// Unlike a recipe
 export async function unlikeRecipe(recipeId, userId) {
   const recipe = await Recipe.findById(recipeId)
   if (!recipe) return null
-  recipe.likes = recipe.likes.filter(
-    (id) => id.toString() !== userId.toString(),
-  )
+  const authorId = recipe.author.toString()
+  const userIdStr = userId.toString()
+  if (authorId === userIdStr) {
+    return recipe
+  }
+  recipe.likes = recipe.likes
+    .map((id) => id.toString())
+    .filter((id) => id !== userIdStr)
   await recipe.save()
+  // Always return likes as strings
+  recipe.likes = recipe.likes.map((id) => id.toString())
   return recipe
 }

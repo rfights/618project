@@ -8,8 +8,6 @@ import {
   deleteRecipe,
 } from '../services/recipes.js'
 
-// Removed JWT authentication for development simplicity
-
 export function recipesRoutes(app) {
   app.get('/api/v1/recipes', async (req, res) => {
     const { sortBy, sortOrder, author, tag } = req.query
@@ -73,9 +71,10 @@ export function recipesRoutes(app) {
 
   app.delete('/api/v1/recipes/:id', async (req, res) => {
     try {
-      // Use a default user ID for development (no auth required)
-      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
-      const { deletedCount } = await deleteRecipe(defaultUserId, req.params.id)
+      console.log('DELETE /api/v1/recipes/:id query:', req.query)
+      const userId = req.query.userId
+      if (!userId) return res.status(400).json({ error: 'Missing userId' })
+      const { deletedCount } = await deleteRecipe(userId, req.params.id)
       if (deletedCount === 0) return res.sendStatus(404)
       return res.sendStatus(204)
     } catch (err) {
@@ -84,13 +83,12 @@ export function recipesRoutes(app) {
     }
   })
 
-  // Like a recipe
   app.post('/api/v1/recipes/:id/like', async (req, res) => {
     try {
-      // Use a default user ID for development (no auth required)
-      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const userId = req.body.userId
+      if (!userId) return res.status(400).json({ error: 'Missing userId' })
       const recipeId = req.params.id
-      const result = await req.services.likeRecipe(recipeId, defaultUserId)
+      const result = await req.services.likeRecipe(recipeId, userId)
       if (!result) return res.status(404).json({ error: 'Recipe not found' })
       return res.json(result)
     } catch (err) {
@@ -99,13 +97,12 @@ export function recipesRoutes(app) {
     }
   })
 
-  // Unlike a recipe
   app.post('/api/v1/recipes/:id/unlike', async (req, res) => {
     try {
-      // Use a default user ID for development (no auth required)
-      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const userId = req.body.userId
+      if (!userId) return res.status(400).json({ error: 'Missing userId' })
       const recipeId = req.params.id
-      const result = await req.services.unlikeRecipe(recipeId, defaultUserId)
+      const result = await req.services.unlikeRecipe(recipeId, userId)
       if (!result) return res.status(404).json({ error: 'Recipe not found' })
       return res.json(result)
     } catch (err) {

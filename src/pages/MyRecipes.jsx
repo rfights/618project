@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getRecipes, deleteRecipe } from '../api/recipes.js'
@@ -10,7 +11,6 @@ export function MyRecipes() {
   const queryClient = useQueryClient()
   const [editingRecipe, setEditingRecipe] = useState(null)
 
-  // Get recipes by current user
   const recipesQuery = useQuery({
     queryKey: ['recipes', { author: user?.username }],
     queryFn: () => getRecipes({ author: user?.username }),
@@ -18,7 +18,7 @@ export function MyRecipes() {
   })
 
   const deleteRecipeMutation = useMutation({
-    mutationFn: deleteRecipe,
+    mutationFn: ({ recipeId, userId }) => deleteRecipe(recipeId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['recipes'] })
     },
@@ -30,6 +30,9 @@ export function MyRecipes() {
     return (
       <div style={{ padding: 8 }}>
         <Header />
+        <Link to='/' style={{ textDecoration: 'none', color: '#007bff' }}>
+          ← Back to Home
+        </Link>
         <p>Please log in to view your recipes.</p>
       </div>
     )
@@ -37,7 +40,7 @@ export function MyRecipes() {
 
   const handleDelete = async (recipeId) => {
     if (window.confirm('Are you sure you want to delete this recipe?')) {
-      deleteRecipeMutation.mutate(recipeId)
+      deleteRecipeMutation.mutate({ recipeId, userId: user.id })
     }
   }
 
@@ -54,9 +57,16 @@ export function MyRecipes() {
     queryClient.invalidateQueries({ queryKey: ['recipes'] })
   }
 
+  ;<Link to='/' style={{ textDecoration: 'none', color: '#000000ff' }}>
+    Back to Home
+  </Link>
+
   return (
     <div style={{ padding: 8 }}>
       <Header />
+      <Link to='/' style={{ textDecoration: 'none', color: '#007bff' }}>
+        ← Back to Home
+      </Link>
       <br />
       <h2>My Recipes ({recipes.length})</h2>
       <hr />
