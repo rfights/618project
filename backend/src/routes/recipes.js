@@ -50,6 +50,19 @@ export function recipesRoutes(app) {
         return res.status(400).json({ error: 'authorId is required' })
       }
       const recipe = await createRecipe(authorId, req.body)
+
+      // Broadcast the new recipe to all connected clients
+      const io = app.get('io')
+      if (io) {
+        // Populate author information for the broadcast
+        const populatedRecipe = await recipe.populate('author')
+        io.emit('new-recipe', {
+          recipe: populatedRecipe,
+          message: `New recipe "${recipe.title}" added by ${populatedRecipe.author.username}!`,
+        })
+        console.log('Broadcasted new recipe:', recipe.title)
+      }
+
       return res.json(recipe)
     } catch (err) {
       console.error('error creating recipe', err)
