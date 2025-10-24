@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Recipes } from './pages/Recipes.jsx'
+import { RecipeDetail } from './pages/RecipeDetail.jsx'
 import { Signup } from './pages/Signup.jsx'
 import { MyRecipes } from './pages/MyRecipes.jsx'
 
@@ -43,6 +44,10 @@ const router = createBrowserRouter([
       {
         path: 'my-recipes',
         element: <MyRecipes />,
+      },
+      {
+        path: 'recipe/:recipeId',
+        element: <RecipeDetail />,
       },
     ],
   },

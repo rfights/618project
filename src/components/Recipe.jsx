@@ -62,7 +62,24 @@ export function Recipe({
           marginBottom: '10px',
         }}
       >
-        <h3 style={{ margin: 0 }}>{title}</h3>
+        <h3 style={{ margin: 0 }}>
+          <a
+            href={`/recipe/${recipeId}`}
+            target='_blank'
+            rel='noopener noreferrer'
+            style={{
+              color: 'inherit',
+              textDecoration: 'none',
+              cursor: 'pointer',
+            }}
+            onMouseOver={(e) => (e.target.style.textDecoration = 'underline')}
+            onMouseOut={(e) => (e.target.style.textDecoration = 'none')}
+            onFocus={(e) => (e.target.style.textDecoration = 'underline')}
+            onBlur={(e) => (e.target.style.textDecoration = 'none')}
+          >
+            {title}
+          </a>
+        </h3>
         {showActions && isOwner && (onEdit || onDelete) && (
           <div style={{ display: 'flex', gap: '8px' }}>
             {onEdit && (

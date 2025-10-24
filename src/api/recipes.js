@@ -5,6 +5,11 @@ export const getRecipes = async (queryParams) => {
   return await res.json()
 }
 
+export const getRecipe = async (recipeId) => {
+  const res = await fetch(`${BASE}/recipes/${recipeId}`)
+  return await res.json()
+}
+
 export const createRecipe = async (recipe) => {
   const res = await fetch(`${BASE}/recipes`, {
     method: 'POST',
