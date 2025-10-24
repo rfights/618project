@@ -32,8 +32,8 @@ export function RecipeNotification() {
 
   const handleViewRecipe = () => {
     if (notification?.recipe) {
-      // Navigate to main recipes page and scroll to find the recipe
-      navigate('/')
+      // Navigate directly to the newly added recipe page
+      navigate(`/recipe/${notification.recipe._id}`)
       setNotification(null)
     }
   }
