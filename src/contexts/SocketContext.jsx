@@ -16,16 +16,23 @@ export const SocketProvider = ({ children }) => {
   useEffect(() => {
     // Only connect if user is logged in
     if (user) {
-      // Connect to the same host/port as the backend API
-      const socketUrl = import.meta.env.DEV
-        ? 'http://localhost:3001'
-        : window.location.origin
+      // Use the same origin to leverage Vite's proxy in development
+      const socketUrl = window.location.origin
 
       console.log('Connecting to socket at:', socketUrl)
+      console.log('User attempting connection:', user.username, 'ID:', user.id)
+
       const newSocket = io(socketUrl, {
         withCredentials: true,
-        transports: ['websocket', 'polling'],
+        transports: ['polling', 'websocket'],
+        upgrade: true,
+        rememberUpgrade: false,
+        timeout: 20000,
+        forceNew: true,
       })
+
+      // Add more debugging
+      console.log('Socket instance created:', !!newSocket)
 
       newSocket.on('connect', () => {
         console.log('Connected to server:', newSocket.id)
@@ -35,6 +42,22 @@ export const SocketProvider = ({ children }) => {
       newSocket.on('disconnect', () => {
         console.log('Disconnected from server')
         setIsConnected(false)
+      })
+
+      // Debug log for new recipe events
+      newSocket.on('new-recipe', (data) => {
+        console.log('Socket received new-recipe event:', data)
+      })
+
+      // Test connection event
+      newSocket.on('connection-test', (data) => {
+        console.log('Socket connection test successful:', data)
+      })
+
+      // Test response handler
+      newSocket.on('test-response', (data) => {
+        console.log('Received test response from server:', data)
+        alert(`Server responded: ${data.message}`)
       })
 
       newSocket.on('connect_error', (error) => {
@@ -58,7 +81,7 @@ export const SocketProvider = ({ children }) => {
         setIsConnected(false)
       }
     }
-  }, [user, socket])
+  }, [user]) // Removed 'socket' dependency to prevent infinite loop
 
   return (
     <SocketContext.Provider value={{ socket, isConnected }}>

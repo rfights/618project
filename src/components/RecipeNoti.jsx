@@ -2,21 +2,41 @@ import { useState, useEffect } from 'react'
 import { useSocket } from '../contexts/SocketContext.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 
 export function RecipeNotification() {
   const [notification, setNotification] = useState(null)
-  const { socket } = useSocket()
+  const { socket, isConnected } = useSocket()
   const [user] = useAuth()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     if (socket && user) {
       const handleNewRecipe = (data) => {
-        if (data.recipe.author._id !== user.id) {
+        console.log('Received new-recipe event:', {
+          recipeAuthorId: data.recipe.author._id,
+          currentUserId: user.id,
+          recipeTitle: data.recipe.title,
+          message: data.message,
+        })
+
+        // Convert IDs to strings for comparison to handle ObjectId vs string differences
+        const authorId = data.recipe.author._id?.toString()
+        const currentUserId = user.id?.toString()
+
+        if (authorId !== currentUserId) {
+          console.log('Showing notification for new recipe:', data.recipe.title)
           setNotification(data)
+          // Invalidate queries to refresh the recipe list immediately
+          queryClient.invalidateQueries({ queryKey: ['recipes'] })
           setTimeout(() => {
             setNotification(null)
           }, 10000)
+        } else {
+          console.log(
+            'Not showing notification - recipe created by current user',
+          )
         }
       }
 
@@ -26,7 +46,7 @@ export function RecipeNotification() {
         socket.off('new-recipe', handleNewRecipe)
       }
     }
-  }, [socket, user])
+  }, [socket, user, queryClient])
 
   const handleViewRecipe = () => {
     if (notification?.recipe) {
@@ -40,6 +60,26 @@ export function RecipeNotification() {
   }
 
   if (!notification) {
+    // Show connection status for debugging (only when logged in)
+    if (user) {
+      return (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '20px',
+            right: '20px',
+            backgroundColor: isConnected ? '#4caf50' : '#f44336',
+            color: 'white',
+            padding: '8px 12px',
+            borderRadius: '4px',
+            fontSize: '12px',
+            zIndex: 999,
+          }}
+        >
+          Socket: {isConnected ? 'Connected' : 'Disconnected'}
+        </div>
+      )
+    }
     return null
   }
 
@@ -49,7 +89,7 @@ export function RecipeNotification() {
         position: 'fixed',
         top: '20px',
         right: '20px',
-        backgroundColor: '#4caf50',
+        backgroundColor: '#ff40ffff',
         color: 'white',
         padding: '16px 20px',
         borderRadius: '8px',
@@ -75,7 +115,7 @@ export function RecipeNotification() {
               marginBottom: '8px',
             }}
           >
-            🍳 New Recipe Added!
+            Someone added a new recipe!
           </div>
           <div style={{ fontSize: '14px', marginBottom: '12px' }}>
             {notification.message}
@@ -85,7 +125,7 @@ export function RecipeNotification() {
               onClick={handleViewRecipe}
               style={{
                 backgroundColor: 'white',
-                color: '#4caf50',
+                color: '#ff40ffff',
                 border: 'none',
                 padding: '6px 12px',
                 borderRadius: '4px',

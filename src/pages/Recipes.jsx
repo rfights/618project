@@ -6,10 +6,11 @@ import { EditableRecipe } from '../components/EditableRecipe.jsx'
 
 import { Header } from '../components/Header.jsx'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { getRecipes, deleteRecipe } from '../api/recipes.js'
+import { useSocket } from '../contexts/SocketContext.jsx'
 export function Recipes() {
   const [author, setAuthor] = useState('')
   const [sortBy, setSortBy] = useState('createdAt')
@@ -18,6 +19,7 @@ export function Recipes() {
 
   // const [user] = useAuth()
   const queryClient = useQueryClient()
+  const { isConnected } = useSocket()
 
   const recipesQuery = useQuery({
     queryKey: ['recipes', { author, sortBy, sortOrder }],
@@ -33,27 +35,33 @@ export function Recipes() {
 
   const recipes = recipesQuery.data ?? []
 
-  const handleEdit = (recipeId) => {
-    const recipe = recipes.find((r) => r._id === recipeId)
-    if (recipe) {
-      setEditingRecipe(recipe)
-    }
-  }
+  const handleEdit = useCallback(
+    (recipeId) => {
+      const recipe = recipes.find((r) => r._id === recipeId)
+      if (recipe) {
+        setEditingRecipe(recipe)
+      }
+    },
+    [recipes],
+  )
 
-  const handleDelete = async (recipeId) => {
-    if (window.confirm('Are you sure you want to delete this recipe?')) {
-      deleteRecipeMutation.mutate(recipeId)
-    }
-  }
+  const handleDelete = useCallback(
+    async (recipeId) => {
+      if (window.confirm('Are you sure you want to delete this recipe?')) {
+        deleteRecipeMutation.mutate(recipeId)
+      }
+    },
+    [deleteRecipeMutation],
+  )
 
-  const handleCancelEdit = () => {
+  const handleCancelEdit = useCallback(() => {
     setEditingRecipe(null)
-  }
+  }, [])
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = useCallback(() => {
     setEditingRecipe(null)
     queryClient.invalidateQueries({ queryKey: ['recipes'] })
-  }
+  }, [queryClient])
 
   return (
     <div style={{ padding: 8 }}>
@@ -61,6 +69,26 @@ export function Recipes() {
       <br />
       <hr />
       <br />
+      {/* Socket connection status */}
+      <div
+        style={{
+          marginBottom: '20px',
+          padding: '10px',
+          backgroundColor: '#f0f0f0',
+          borderRadius: '5px',
+        }}
+      >
+        <strong>Socket Status:</strong>
+        <span
+          style={{
+            color: isConnected ? 'green' : 'red',
+            fontWeight: 'bold',
+            marginLeft: '10px',
+          }}
+        >
+          {isConnected ? '✅ Connected' : '❌ Disconnected'}
+        </span>
+      </div>
       <CreateRecipe />
       <br />
       <hr />

@@ -6,7 +6,7 @@ import { createServer } from 'http'
 import { Server } from 'socket.io'
 
 import { app } from './app.js'
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3001
 
 await initDatabase()
 
@@ -30,11 +30,28 @@ const io = new Server(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
+  allowEIO3: true,
+  transports: ['polling', 'websocket'],
 })
 
 // Socket connection handling
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id)
+
+  // Test event for debugging
+  socket.emit('connection-test', {
+    message: 'Successfully connected to server',
+    socketId: socket.id,
+  })
+
+  // Handle test messages from client
+  socket.on('test-message', (data) => {
+    console.log('Received test message from client:', data)
+    socket.emit('test-response', {
+      message: 'Server received your test message!',
+      originalMessage: data.message,
+    })
+  })
 
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id)

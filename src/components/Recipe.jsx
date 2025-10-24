@@ -1,10 +1,10 @@
 import PropTypes from 'prop-types'
 import { User } from './User.jsx'
 import { useAuth } from '../contexts/AuthContext.jsx'
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import { likeRecipe, unlikeRecipe } from '../api/recipes.js'
 
-export function Recipe({
+export const Recipe = memo(function Recipe({
   title,
   ingredients,
   instructions,
@@ -158,6 +158,7 @@ export function Recipe({
           <img
             src='/src/assets/meow_chefkiss.png'
             alt='Like'
+            loading='lazy'
             style={{ width: '20px', height: '20px' }}
           />
           <span
@@ -186,6 +187,7 @@ export function Recipe({
           <img
             src={imageUrl}
             alt={title}
+            loading='lazy'
             style={{
               maxWidth: '100%',
               height: '200px',
@@ -233,7 +235,7 @@ export function Recipe({
       )}
     </article>
   )
-}
+})
 
 Recipe.propTypes = {
   title: PropTypes.string.isRequired,

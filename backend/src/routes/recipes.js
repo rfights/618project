@@ -54,11 +54,18 @@ export function recipesRoutes(app) {
       const io = app.get('io')
       if (io) {
         const populatedRecipe = await recipe.populate('author')
+        console.log('Emitting new-recipe event for:', {
+          recipeTitle: recipe.title,
+          authorId: populatedRecipe.author._id,
+          authorUsername: populatedRecipe.author.username,
+        })
         io.emit('new-recipe', {
           recipe: populatedRecipe,
           message: `New recipe "${recipe.title}" added by ${populatedRecipe.author.username}!`,
         })
         console.log('Broadcasted new recipe:', recipe.title)
+      } else {
+        console.log('Socket.IO not available, cannot broadcast new recipe')
       }
 
       return res.json(recipe)
@@ -71,8 +78,12 @@ export function recipesRoutes(app) {
   app.patch('/api/v1/recipes/:id', async (req, res) => {
     try {
       const defaultUserId = '507f1f77bcf86cd799439011'
-      const recipe = await updateRecipe(defaultUserId, req.params.id, req.body)
-      return res.json(recipe)
+      const updatedRecipe = await updateRecipe(
+        defaultUserId,
+        req.params.id,
+        req.body,
+      )
+      return res.json(updatedRecipe)
     } catch (err) {
       console.error('error updating recipe', err)
       return res.status(500).end()

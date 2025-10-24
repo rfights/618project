@@ -12,7 +12,15 @@ import { RecipeNotification } from './components/RecipeNoti.jsx'
 
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes (replaces cacheTime)
+      refetchOnWindowFocus: false,
+    },
+  },
+})
 
 // Layout component that includes the RecipeNotification
 function Layout() {
