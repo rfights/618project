@@ -8,7 +8,7 @@ import { Login } from './pages/Login.jsx'
 
 import { AuthContextProvider } from './contexts/AuthContext.jsx'
 import { SocketProvider } from './contexts/SocketContext.jsx'
-import { RecipeNotification } from './components/RecipeNotification.jsx'
+import { RecipeNotification } from './components/RecipeNoti.jsx'
 
 import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom'
 

@@ -51,10 +51,8 @@ export function recipesRoutes(app) {
       }
       const recipe = await createRecipe(authorId, req.body)
 
-      // Broadcast the new recipe to all connected clients
       const io = app.get('io')
       if (io) {
-        // Populate author information for the broadcast
         const populatedRecipe = await recipe.populate('author')
         io.emit('new-recipe', {
           recipe: populatedRecipe,
@@ -72,8 +70,7 @@ export function recipesRoutes(app) {
 
   app.patch('/api/v1/recipes/:id', async (req, res) => {
     try {
-      // Use a default user ID for development (no auth required)
-      const defaultUserId = '507f1f77bcf86cd799439011' // Mock ObjectId
+      const defaultUserId = '507f1f77bcf86cd799439011'
       const recipe = await updateRecipe(defaultUserId, req.params.id, req.body)
       return res.json(recipe)
     } catch (err) {

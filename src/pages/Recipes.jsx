@@ -1,7 +1,7 @@
 import { RecipeList } from '../components/RecipeList.jsx'
 import { CreateRecipe } from '../components/CreateRecipe.jsx'
 import { RecipeFilter } from '../components/RecipeFilter.jsx'
-import { RecipeSorting } from '../components/RecipeSorting.jsx'
+import { RecipeSorting } from '../components/RecipeSort.jsx'
 import { EditableRecipe } from '../components/EditableRecipe.jsx'
 
 import { Header } from '../components/Header.jsx'

@@ -12,10 +12,8 @@ export function RecipeNotification() {
   useEffect(() => {
     if (socket && user) {
       const handleNewRecipe = (data) => {
-        // Don't show notification for own recipes
         if (data.recipe.author._id !== user.id) {
           setNotification(data)
-          // Auto-hide after 10 seconds
           setTimeout(() => {
             setNotification(null)
           }, 10000)
@@ -32,7 +30,6 @@ export function RecipeNotification() {
 
   const handleViewRecipe = () => {
     if (notification?.recipe) {
-      // Navigate directly to the newly added recipe page
       navigate(`/recipe/${notification.recipe._id}`)
       setNotification(null)
     }
